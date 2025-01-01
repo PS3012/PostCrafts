@@ -35,8 +35,11 @@ function Register() {
                     if (response.status === 201) {
                          toast.success(response.data.message);
                          setData(initialData)
+                    } else {
+                         toast.error(response.data.message)
                     }
                } catch (error) {
+                    toast.error(error.response.data.message)
                     console.log(error);
                }
           }
