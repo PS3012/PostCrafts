@@ -7,6 +7,13 @@ import { sendVerificationEmail } from "../../middlewares/verification.js";
 const handleUserRegister = async (req, res) => {
   const { name, email, phone, gender, password, username } = req.body;
   
+  if (!email || !name || !password) {
+    return res.status(422).json({
+      error: true,
+      message: "Invalid Data. All fields are required.",
+    });
+  }
+
   if (!emailRegex.test(email)) {
     return res.status(422).json({
       error: true,

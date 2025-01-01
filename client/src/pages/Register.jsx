@@ -5,14 +5,13 @@ import { emailRegex } from "../utils/constants"
 import axiosReq from "../utils/axiosReq"
 
 function Register() {
-     const initialData = { name: "", email: "", password: "", gender: "", username: "", phone: "" }
+     const initialData = { name: "Piyush Sahu", email: "pyushsahud123@gmail.com", password: "123456789", gender: "male", username: "piyush_sahu", phone: "8765057868" }
      const [data, setData] = useState(initialData)
      const handleDataChange = (e) => {
           const { name, value } = e.target
           setData(prev => ({ ...prev, [name]: value }))
      }
-     const handleSubmit = async (e) => {
-          e.preventDefault()
+     const handleSubmit = async () => {
           if (!data.name || data.name.trim() === "") {
                toast.error("Name is required.")
           } else if (!data.username || data.username.trim() === "") {
@@ -25,9 +24,14 @@ function Register() {
                toast.error("Password is required.")
           } else {
                try {
-                    const formdata = new FormData(e.target);
-                    const finalData = Object.fromEntries(formdata.entries());
-                    const response = await axiosReq.post("/user/register", finalData);
+                    const formData = new FormData();
+                    formData.append("name", data.name)
+                    formData.append("username", data.username)
+                    formData.append("email", data.email)
+                    formData.append("phone", data.phone)
+                    formData.append("gender", data.gender)
+                    formData.append("password", data.password)
+                    const response = await axiosReq.post("/user/register", data);
                     if (response.status === 201) {
                          toast.success(response.data.message);
                          setData(initialData)
@@ -93,7 +97,7 @@ function Register() {
                                    <h2 className="text-3xl font-bold leading-tight text-black sm:text-4xl">Sign up to Post Crafts</h2>
                                    <p className="mt-2 text-base text-gray-600">Already have an account? <Link to="/login" className="font-medium text-blue-600 transition-all duration-200 hover:text-blue-700 focus:text-blue-700 hover:underline">Login</Link></p>
 
-                                   <form className="space-y-3 mt-5 mb-0" onSubmit={handleSubmit}>
+                                   <div className="space-y-3 mt-5 mb-0">
                                         <div>
                                              <label className="text-base font-medium text-gray-900"> Name </label>
                                              <div className="mt-1 relative text-gray-400 focus-within:text-gray-600">
@@ -190,11 +194,11 @@ function Register() {
                                         </div>
 
                                         <div>
-                                             <button type="submit"
+                                             <button type="submit" onClick={handleSubmit}
                                                   className="inline-flex items-center justify-center w-full px-4 py-2 text-base font-semibold text-white transition-all duration-200 border border-transparent rounded-md bg-gradient-to-r from-fuchsia-600 to-blue-600 focus:outline-none hover:opacity-80 focus:opacity-80"
                                              >Sign up</button>
                                         </div>
-                                   </form>
+                                   </div>
                               </div>
                          </div>
                     </div>
