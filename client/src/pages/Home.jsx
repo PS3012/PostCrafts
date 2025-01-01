@@ -1,26 +1,36 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import instance from "../axios.config";
+import ProductCard from "../components/ProductCard";
 import { useDispatch, useSelector } from "react-redux";
-import { getProduct } from "../store/productSlice";
-import ProductCard from "../components/ProductCard"
+import { getProduct } from "../store/productSlice/productSlice";
+
+
 
 function Home() {
-     const dispatch = useDispatch()
-     const products = useSelector((state) => state.product.products);
-     useEffect(() => {
-          dispatch(getProduct());
-     }, [dispatch]);
-     return (
-          <>
-               <div className="py-6 px-4 mx-auto sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-4">
-                         {products && products.length > 0 && products.map((product) =>
-                              <ProductCard product={product} key={product.uid} />
-                         )}
-                    </div>
-               </div>
+  // const [products, setProducts] = useState([]);
+  const dispatch=useDispatch()
+  const products=useSelector((state)=> state.product.products);
 
-          </>
-     )
+  useEffect(() => {
+    // fetchData();
+    dispatch(getProduct());
+  }, []);
+
+  async function fetchData() {
+    const response = await instance.get("/product/get");
+    console.log(response.data);
+    setProducts(response.data.products);
+  }
+  return (
+    <>
+      <div className="  min-h-screen  grid grid-cols-3 p-4 place-items-center">
+        {products.length > 0 &&
+          products.map((product) => {
+            return <ProductCard product={product} key={product.uid} />;
+          })}
+      </div>
+    </>
+  );
 }
 
-export default Home
+export default Home;

@@ -1,41 +1,43 @@
-import express from "express";
-import {} from "dotenv/config.js";
-import cors from "cors";
+import express, { json, urlencoded } from "express"
+import { connectToDB } from "./db/connection.js";
+import cors from 'cors'
+import "dotenv/config"
 import cookieParser from "cookie-parser";
-import connectToDB from "./utils/connectToDB.js";
-import userRouter from "./routes/user.route.js";
-import productRouter from "./routes/product.route.js";
-import authRouter from "./routes/auth.route.js";
-import cartRouter from "./routes/cart.route.js";
-import couponRouter from "./routes/coupon.route.js";
-import paymentRouter from "./routes/payment.route.js";
-import orderRouter from "./routes/order.route.js";
+import productRouter from "./routes/productRoute.js";
+import userRouter from "./routes/userRouter.js";
+import authRouter from "./routes/authRouter.js";
+import cartRouter from "./routes/cartRouter.js";
+import couponRouter from "./routes/couponRouter.js";
+import paymentRouter from "./routes/paymentRouter.js";
+import orderRouter from "./routes/orderRouter.js";
+import blogRouter from "./routes/blogRouter.js";
 
-const app = express();
-await connectToDB();
 
-const allowedOrigins = [process.env.FRONTEND_URL];
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(cookieParser());
-app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+const app=express();
+const port=process.env.PORT;
+app.use(json());
+app.use(urlencoded({}));
+
+
+const corsOptions = {
+    origin: process.env.FRONTEND_URL,
+    credentials: true, 
+    methods: "GET,POST,PUT,DELETE,PATCH",
     allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+  };
+  
+  app.use(cors(corsOptions));
+  app.use(cookieParser());
+app.use("/api/product",productRouter)
+app.use("/api/user",userRouter)
+app.use("/api/auth",authRouter)
+app.use("/api/cart",cartRouter)
+app.use("/api/coupon",couponRouter)
+app.use("/api/pay", paymentRouter);
+app.use("/api/orders", orderRouter);
+app.use("/api/blog",blogRouter)
 
-app.use("/api/v1/user", userRouter);
-app.use("/api/v1/product", productRouter);
-app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/cart", cartRouter);
-app.use("/api/v1/coupon", couponRouter);
-app.use("/api/v1/pay", paymentRouter);
-app.use("/api/v1/orders", orderRouter);
-
-app.listen(process.env.PORT_NUMBER, () => {
-  console.log("Server Started");
-});
+await connectToDB();
+app.listen(port,()=>{console.log("Connected to Server");
+})
