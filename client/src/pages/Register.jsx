@@ -5,7 +5,7 @@ import { emailRegex } from "../utils/constants"
 import axiosReq from "../utils/axiosReq"
 
 function Register() {
-     const initialData = { name: "Piyush Sahu", email: "pyushsahud123@gmail.com", password: "123456789", gender: "male", username: "piyush_sahu", phone: "8765057868" }
+     const initialData = { name: "", email: "", password: "", gender: "", username: "", phone: "" }
      const [data, setData] = useState(initialData)
      const handleDataChange = (e) => {
           const { name, value } = e.target
