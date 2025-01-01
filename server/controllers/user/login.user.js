@@ -48,7 +48,7 @@ const handleUserLogin = async (req, res) => {
       gender: user.gender,
     };
 
-    res.send({
+    res.status(200).json({
       error: false,
       message: "User Login successfully.",
       user: loggedInUser,

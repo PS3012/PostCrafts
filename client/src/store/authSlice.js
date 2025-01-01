@@ -7,6 +7,9 @@ export const checkAuth = createAsyncThunk(
     try {
       const response = await axiosReq.get("/auth/validate-token", {
         withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
       return response.data.user;
     } catch (error) {
@@ -17,7 +20,14 @@ export const checkAuth = createAsyncThunk(
 
 export const logout = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
   try {
-    await axiosReq.post("/user/logout", {}, { withCredentials: true });
+    await axiosReq.post(
+      "/user/logout", {}, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return null;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data.message);
@@ -39,7 +49,7 @@ const authSlice = createSlice({
       state.error = null;
     },
     updateUserWishlist: (state, action) => {
-      const { productId, actionType } = action.payload; 
+      const { productId, actionType } = action.payload;
 
       if (actionType === "add") {
         state.user = {
