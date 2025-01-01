@@ -4,24 +4,24 @@ import {} from "dotenv/config.js";
 import User from "../../models/user.model.js";
 
 const handleUserLogin = async (req, res) => {
-  const { username, password } = request.body;
-  
+  const { username, password } = req.body;
+
   try {
     const user = await User.findOne({ username });
 
     if (!user)
-      return response.status(401).send({ message: "Incorrect credentials" });
+      return res.status(401).send({ message: "Incorrect credentials" });
 
     if (!user.isEmailVerified)
-      return response
+      return res
         .status(403)
         .send({ message: "Please verify your email before logging in" });
 
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch)
-      return response.status(401).send({ message: "Incorrect credentials" });
-    
+      return res.status(401).send({ message: "Incorrect credentials" });
+
     const token = jwt.sign(
       {
         userId: user._id,
@@ -32,8 +32,8 @@ const handleUserLogin = async (req, res) => {
         expiresIn: "24h",
       }
     );
-    
-    response.cookie("token", token, {
+
+    res.cookie("token", token, {
       httpOnly: true,
       secure: true,
       sameSite: "strict",
@@ -47,10 +47,14 @@ const handleUserLogin = async (req, res) => {
       phone: user.phone,
       gender: user.gender,
     };
-    
-    response.send(loggedInUser);
+
+    res.send({
+      error: false,
+      message: "User Login successfully.",
+      user: loggedInUser,
+    });
   } catch (error) {
-    return response.status(500).send({ message: error });
+    return res.status(500).send({ message: error });
   }
 };
 

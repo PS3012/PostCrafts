@@ -1,21 +1,18 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosReq from "../utils/axiosReq";
+import toast from "react-hot-toast";
 
-// Initial state
 const initialState = {
   cart: null,
   status: "idle",
   error: null,
 };
 
-// Async thunk to fetch the cart
 export const fetchCart = createAsyncThunk(
   "cart/fetchCart",
   async (_, thunkAPI) => {
     try {
       const response = await axiosReq.get("/cart");
-      console.log(response.data.cart);
-
       return response.data.cart;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -25,22 +22,15 @@ export const fetchCart = createAsyncThunk(
   }
 );
 
-// Async thunk to add a product to the cart
 export const addToCart = createAsyncThunk(
   "cart/addToCart",
   async ({ productId, quantity = 1 }, thunkAPI) => {
-    console.log("reached add to cart");
-
     try {
-      console.log(productId, quantity);
-
       const response = await axiosReq.post("/cart/add", {
         productId,
         quantity,
       });
-      console.log(response.data);
-      alert("Product added to the cart!!");
-
+      toast.success("Product added to the cart!!");
       return response.data.cart;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -50,13 +40,9 @@ export const addToCart = createAsyncThunk(
   }
 );
 
-// Async thunk to update product quantity
 export const updateQuantity = createAsyncThunk(
   "cart/updateQuantity",
   async ({ productId, quantity }, thunkAPI) => {
-    console.log("updated thunk");
-    console.log(productId, quantity);
-
     try {
       const response = await axiosReq.put("/cart/updateQuantity", {
         productId,
@@ -71,7 +57,6 @@ export const updateQuantity = createAsyncThunk(
   }
 );
 
-// Async thunk to remove a product from the cart
 export const removeFromCart = createAsyncThunk(
   "cart/removeFromCart",
   async (productId, thunkAPI) => {
@@ -86,7 +71,6 @@ export const removeFromCart = createAsyncThunk(
   }
 );
 
-// Create the cart slice
 const cartSlice = createSlice({
   name: "cart",
   initialState,
@@ -113,12 +97,9 @@ const cartSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(addToCart.fulfilled, (state, action) => {
-        console.log(action.payload);
-
         state.cart = action.payload;
       })
       .addCase(updateQuantity.fulfilled, (state, action) => {
-        console.log("reached updated");
         state.cart = action.payload;
       })
       .addCase(removeFromCart.fulfilled, (state, action) => {
@@ -127,6 +108,5 @@ const cartSlice = createSlice({
   },
 });
 
-// Export the actions and reducer
 export const { modifyCart } = cartSlice.actions;
 export default cartSlice.reducer;

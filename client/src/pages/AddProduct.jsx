@@ -24,8 +24,7 @@ function AddProduct() {
           }
      }
 
-     const handleSubmit = async (e) => {
-          e.preventDefault();
+     const handleSubmit = async () => {
           if (!product.name || product.name.trim() === "") {
                toast.error("Product Name is required.")
           } else if (!product.brand || product.brand.trim() === "") {
@@ -38,7 +37,7 @@ function AddProduct() {
                toast.error("Enter valid product price.")
           } else {
                try {
-                    const formdata = new FormData(e.target);
+                    const formdata = new FormData();
                     formdata.append("name", product.name);
                     formdata.append("price", product.price);
                     formdata.append("category", product.category);
@@ -46,7 +45,12 @@ function AddProduct() {
                     formdata.append("description", product.description);
                     formdata.append("inventory", product.inventory);
                     formdata.append("image", product.image);
-                    const response = await axiosReq.post("/product", formdata, { withCredentials: true});
+                    const response = await axiosReq.post("/product", formdata, {
+                         withCredentials: true,
+                         headers: {
+                              "Content-Type": "multipart/form-data",
+                         }
+                    });
                     if (response.status === 201) {
                          toast.success("Product added successfully.")
                          setProduct(initialData)
@@ -62,7 +66,7 @@ function AddProduct() {
 
                <div className="py-6 px-4 mx-auto sm:px-6 lg:px-8">
                     <h1 className="text-2xl font-bold mb-4">Add Product</h1>
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="space-y-4">
                          <div className="grid grid-cols-3 gap-4">
                               <div>
                                    <label className="block text-sm font-medium mb-1">Name <span className="text-red-600">*</span></label>
@@ -119,10 +123,10 @@ function AddProduct() {
                                    className="w-full border border-gray-300 p-2 rounded"
                               />
                          </div>
-                         <button type="submit"
+                         <button type="submit" onClick={handleSubmit}
                               className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
                          >Add Product</button>
-                    </form>
+                    </div>
                </div>
 
           </>

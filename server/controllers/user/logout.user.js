@@ -1,6 +1,6 @@
 const handleUserLogout = async (req, res) => {
   try {
-    res.clearCookie("authToken", {
+    res.clearCookie("token", {
       httpOnly: true,
       secure: "true",
       sameSite: "none",

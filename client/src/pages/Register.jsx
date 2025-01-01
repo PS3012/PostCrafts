@@ -162,10 +162,15 @@ function Register() {
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
                                                        </svg>
                                                   </div>
-                                                  <input
-                                                       type="text" placeholder="Enter gender" name="gender" value={data.gender} onChange={handleDataChange}
+                                                  <select
+                                                       name="gender" value={data.gender} onChange={handleDataChange}
                                                        className="block w-full py-2 pl-10 pr-4 text-black placeholder-gray-500 transition-all duration-200 border border-gray-200 rounded-md bg-gray-50 focus:outline-none focus:border-blue-600 focus:bg-white caret-blue-600"
-                                                  />
+                                                  >
+                                                       <option value="">-- Select Gender --</option>
+                                                       <option value="male">Male</option>
+                                                       <option value="female">Female</option>
+                                                       <option value="other">Other</option>
+                                                  </select>
                                              </div>
                                         </div>
 

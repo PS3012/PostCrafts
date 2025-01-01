@@ -15,7 +15,6 @@ function Login() {
      useEffect(() => {
           if (isAuthenticated) {
                const referer = searchParams.get("referer");
-               console.log("referer", referer);
                if (referer) navigate(referer);
           }
      }, [isAuthenticated, navigate, searchParams]);
@@ -38,10 +37,14 @@ function Login() {
                     if (response.status === 200) {
                          const { name } = response.data;
                          localStorage.setItem("authToken", name);
-                         dispatch(loginUser(response.data))
+                         dispatch(loginUser(response.data.user))
                          navigate("/");
+                         toast.success(response.data.message)
+                    } else {
+                         toast.error(response.data.message)
                     }
                } catch (error) {
+                    toast.error(error.response.data.message)
                     console.log(error);
                }
           }

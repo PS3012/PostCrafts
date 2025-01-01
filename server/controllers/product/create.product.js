@@ -1,9 +1,10 @@
 import Product from "../../models/product.model.js";
-import { uploadToCloudinary } from "../../middlewares/cloudinary.js";
 
 const handleCreateProduct = async (req, res) => {
   try {
-    const imageObj = await uploadToCloudinary(req.file);
+    if (!req.file) {
+      return res.status(400).send({ message: "Image file is required" });
+    }
 
     const { name, brand, category, price, description, inventory } = req.body;
 
@@ -14,7 +15,7 @@ const handleCreateProduct = async (req, res) => {
       price,
       description,
       inventory,
-      image: imageObj.secure_url,
+      image: req.file.filename,
       addedBy: req.user._id,
     });
 

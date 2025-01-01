@@ -8,10 +8,6 @@ export const checkAuth = createAsyncThunk(
       const response = await axiosReq.get("/auth/validate-token", {
         withCredentials: true,
       });
-      console.log("Reached here");
-
-      console.log(response);
-
       return response.data.user;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data.message);
@@ -38,16 +34,12 @@ const authSlice = createSlice({
   },
   reducers: {
     loginUser: (state, action) => {
-      console.log(action.payload);
-
       state.isAuthenticated = true;
       state.user = action.payload;
       state.error = null;
     },
     updateUserWishlist: (state, action) => {
-      console.log(action.payload);
-
-      const { productId, actionType } = action.payload; // `actionType` can be "add" or "remove"
+      const { productId, actionType } = action.payload; 
 
       if (actionType === "add") {
         state.user = {

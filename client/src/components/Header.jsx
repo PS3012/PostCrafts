@@ -9,9 +9,6 @@ function Header() {
      const user = useSelector((state) => state.auth.user);
      const [visible, setVisible] = useState(false);
      const dispatch = useDispatch();
-     const handleSetting = () => {
-          setVisible(!visible);
-     };
      let cartLength = 0;
      if (cart) {
           cartLength = cart.items.reduce((acc, item) => acc + item.quantity, 0);
@@ -48,31 +45,36 @@ function Header() {
                                              )}
                                         </Link>
                                         <div className="relative">
-                                             <div onClick={handleSetting} className="text-2xl cursor-pointer hover:text-purple-200">Settings</div>
+                                             <div onClick={() => setVisible(!visible)} className="text-base cursor-pointer font-medium flex gap-1 items-center text-black transition-all duration-200 hover:text-blue-600 focus:text-blue-600">
+                                                  Settings
+                                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="#000000" fill="none">
+                                                       <path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                                  </svg>
+                                             </div>
                                              {visible && (
-                                                  <div className="absolute right-0 top-8 w-48 bg-white shadow-md rounded-lg flex flex-col gap-3 p-4 text-purple-700 z-50">
+                                                  <div className="absolute right-0 top-8 w-48 bg-white shadow-md rounded-lg flex flex-col gap-3 p-4 z-50">
                                                        {user?.role === 'seller' && (
                                                             <>
                                                                  <Link
                                                                       to={'/add-product'}
-                                                                      className="hover:text-purple-500"
+                                                                      className="transition-all duration-200 hover:text-blue-600"
                                                                  >
                                                                       Add Product
                                                                  </Link>
-                                                                 <Link to={'/my-coupons'} className="hover:text-purple-500">
+                                                                 <Link to={'/my-coupons'} className="transition-all duration-200 hover:text-blue-600">
                                                                       My Coupons
                                                                  </Link>
                                                             </>
                                                        )}
-                                                       <Link to={'/profile'} className="hover:text-purple-500">
+                                                       <Link to={'/profile'} className="transition-all duration-200 hover:text-blue-600">
                                                             Profile
                                                        </Link>
-                                                       <Link to={'/wishlist'} className="hover:text-purple-500">
+                                                       <Link to={'/wishlist'} className="transition-all duration-200 hover:text-blue-600">
                                                             Wishlist
                                                        </Link>
                                                        <button
                                                             onClick={handleLogout}
-                                                            className="text-left hover:text-purple-500"
+                                                            className="text-left transition-all duration-200 hover:text-blue-600"
                                                        >
                                                             Logout
                                                        </button>
