@@ -5,7 +5,7 @@ import { emailRegex } from "../utils/constants"
 import axiosReq from "../utils/axiosReq"
 
 function Register() {
-     const initialData = { name: "", email: "", password: "" }
+     const initialData = { name: "", email: "", password: "", gender: "", username: "", phone: "" }
      const [data, setData] = useState(initialData)
      const handleDataChange = (e) => {
           const { name, value } = e.target
@@ -15,6 +15,8 @@ function Register() {
           e.preventDefault()
           if (!data.name || data.name.trim() === "") {
                toast.error("Name is required.")
+          } else if (!data.username || data.username.trim() === "") {
+               toast.error("Username is required.")
           } else if (!data.email || data.email.trim() === "") {
                toast.error("E-Mail is required.")
           } else if (!emailRegex.test(data.email)) {
@@ -108,6 +110,21 @@ function Register() {
                                         </div>
 
                                         <div>
+                                             <label className="text-base font-medium text-gray-900"> Username </label>
+                                             <div className="mt-1 relative text-gray-400 focus-within:text-gray-600">
+                                                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                       <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                       </svg>
+                                                  </div>
+                                                  <input
+                                                       type="text" placeholder="Enter your username" name="username" value={data.username} onChange={handleDataChange}
+                                                       className="block w-full py-2 pl-10 pr-4 text-black placeholder-gray-500 transition-all duration-200 border border-gray-200 rounded-md bg-gray-50 focus:outline-none focus:border-blue-600 focus:bg-white caret-blue-600"
+                                                  />
+                                             </div>
+                                        </div>
+
+                                        <div>
                                              <label className="text-base font-medium text-gray-900"> Email address </label>
                                              <div className="mt-1 relative text-gray-400 focus-within:text-gray-600">
                                                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -116,7 +133,37 @@ function Register() {
                                                        </svg>
                                                   </div>
                                                   <input
-                                                       type="email" placeholder="Enter email to get started" name="email" value={data.email} onChange={handleDataChange}
+                                                       type="email" placeholder="Enter email" name="email" value={data.email} onChange={handleDataChange}
+                                                       className="block w-full py-2 pl-10 pr-4 text-black placeholder-gray-500 transition-all duration-200 border border-gray-200 rounded-md bg-gray-50 focus:outline-none focus:border-blue-600 focus:bg-white caret-blue-600"
+                                                  />
+                                             </div>
+                                        </div>
+
+                                        <div>
+                                             <label className="text-base font-medium text-gray-900"> Mobile Number </label>
+                                             <div className="mt-1 relative text-gray-400 focus-within:text-gray-600">
+                                                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                       <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                                                       </svg>
+                                                  </div>
+                                                  <input
+                                                       type="number" placeholder="Enter mobile number" name="phone" value={data.phone} onChange={handleDataChange}
+                                                       className="block w-full py-2 pl-10 pr-4 text-black placeholder-gray-500 transition-all duration-200 border border-gray-200 rounded-md bg-gray-50 focus:outline-none focus:border-blue-600 focus:bg-white caret-blue-600"
+                                                  />
+                                             </div>
+                                        </div>
+
+                                        <div>
+                                             <label className="text-base font-medium text-gray-900"> Gender </label>
+                                             <div className="mt-1 relative text-gray-400 focus-within:text-gray-600">
+                                                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                       <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                                                       </svg>
+                                                  </div>
+                                                  <input
+                                                       type="text" placeholder="Enter gender" name="gender" value={data.gender} onChange={handleDataChange}
                                                        className="block w-full py-2 pl-10 pr-4 text-black placeholder-gray-500 transition-all duration-200 border border-gray-200 rounded-md bg-gray-50 focus:outline-none focus:border-blue-600 focus:bg-white caret-blue-600"
                                                   />
                                              </div>

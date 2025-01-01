@@ -1,19 +1,13 @@
 import Product from "../../models/product.model.js";
-import { uploadToCloudinary } from "../../utils/cloudinary.js";
+import { uploadToCloudinary } from "../../middlewares/cloudinary.js";
 
 const handleCreateProduct = async (req, res) => {
-  const imageObj = await uploadToCloudinary(req.file);
-  const { name, brand, category, price, description, inventory } = req.body;
-
-  if (!name || !brand || !category || !price || !inventory) {
-    return res.status(422).json({
-      error: true,
-      message: "Invalid data. All fields are required.",
-    });
-  }
-
   try {
-    const newProduct = new Product({
+    const imageObj = await uploadToCloudinary(req.file);
+
+    const { name, brand, category, price, description, inventory } = req.body;
+
+    const productToAdd = new Product({
       name,
       brand,
       category,
@@ -24,17 +18,10 @@ const handleCreateProduct = async (req, res) => {
       addedBy: req.user._id,
     });
 
-    await newProduct.save();
-    return res.status(201).json({
-      error: false,
-      message: "Product added successfully.",
-    });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error.",
-    });
+    await productToAdd.save();
+    res.status(201).send({ message: "Product Added" });
+  } catch (error) {
+    res.status(500).send({ message: "Error adding product to DB", error });
   }
 };
 

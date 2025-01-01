@@ -1,34 +1,25 @@
 import Product from "../../models/product.model.js";
 
 const handleGetProductById = async (req, res) => {
-  const { productId } = req.params;
-
-  if (!productId) {
-    return res.status(400).json({
-      error: true,
-      message: "Invalid Product Id",
-    });
-  }
-
   try {
-    const product = await Product.findOne({ _id: productId });
-    if (!product) {
-      return res.status(400).json({
-        error: true,
-        message: `Product with id - ${productId} not exist`,
-      });
+    const id = req.params.id;
+    if (!id) {
+      return res
+        .status(400)
+        .send({ message: "Provide the id to find the product" });
     }
 
-    return res.status(200).json({
-      error: false,
-      message: "Product found successfully",
-      data: product,
-    });
-  } catch (err) {
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-    });
+    const prod = await Product.findById(id);
+
+    if (!prod) {
+      return res
+        .status(400)
+        .send({ message: "Product with given id is not available" });
+    }
+
+    return res.send(prod);
+  } catch (error) {
+    res.status(500).send({ message: "Error getting a product " + error });
   }
 };
 

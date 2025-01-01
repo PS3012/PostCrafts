@@ -1,10 +1,9 @@
-/* eslint-disable react/prop-types */
 import { createContext, useContext, useEffect, useState } from "react";
 import axiosReq from "../utils/axiosReq";
 
 const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
+export function AuthProvider(_props) {
      const [authState, setAuthState] = useState({
           isAuthenticated: false,
           user: null,
@@ -71,7 +70,7 @@ export function AuthProvider({ children }) {
 
      return (
           <AuthContext.Provider value={{ ...authState, login, logout, updateUser }}>
-               {children}
+               {_props.children}
           </AuthContext.Provider>
      );
 }

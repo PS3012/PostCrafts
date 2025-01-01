@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
+import { nanoid } from "nanoid";
 
-const ProductSchema = new mongoose.Schema(
+const productSchema = new mongoose.Schema(
   {
-    image: {
+    uid: {
       type: String,
+      default: () => nanoid(),
     },
     name: {
       type: String,
@@ -18,7 +20,7 @@ const ProductSchema = new mongoose.Schema(
       required: true,
     },
     price: {
-      type: String,
+      type: Number,
       required: true,
     },
     description: {
@@ -28,15 +30,32 @@ const ProductSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    ratings: [
+      {
+        star: Number,
+        comment: String,
+        postedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "user",
+        },
+      },
+    ],
+    totalRating: {
+      type: Number,
+      default: 0,
+    },
+    image: {
+      type: String,
+    },
     addedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "users",
+      ref: "user",
       required: true,
     },
   },
   { timestamps: true }
 );
 
-const Product = mongoose.model("products", ProductSchema);
+const Product = mongoose.model("product", productSchema);
 
 export default Product;

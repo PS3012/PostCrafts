@@ -1,13 +1,11 @@
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import {} from "dotenv/config.js";
 import { emailRegex } from "../../utils/constants.js";
 import User from "../../models/user.model.js";
-import { sendVerificationEmail } from "../../utils/verification.js";
+import { sendVerificationEmail } from "../../middlewares/verification.js";
 
 const handleUserRegister = async (req, res) => {
-  const { name, email, password } = req.body;
-
+  const { name, email, phone, gender, password, username } = req.body;
   if (!email || !name || !password) {
     return res.status(422).json({
       error: true,
@@ -23,36 +21,39 @@ const handleUserRegister = async (req, res) => {
   }
 
   try {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(409).json({
-        error: true,
-        message: "User already exists with this email.",
-      });
-    }
+    const existingUsername = await User.findOne({ username });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    if (existingUsername)
+      return res.status(400).send({ message: `Username ${username} exists` });
+
+    const existingEmail = await User.findOne({ email });
+
+    if (existingEmail)
+      return res.status(400).send({ message: `Email ${username} exists` });
+
+    const password = await bcrypt.hash(req.body.password, 10);
+
     const newUser = new User({
       name,
+      username,
       email,
-      password: hashedPassword,
-      role: "BUYER",
+      phone,
+      password,
+      gender,
     });
-    await sendVerificationEmail(newUser._id, newUser.email);
+
     await newUser.save();
 
-    return res.status(201).json({
-      error: false,
+    await sendVerificationEmail(newUser._id, newUser.email);
+
+    return res.status(201).send({
       message:
         "User registered successfully. We've sent a verification link to your email address. Please check your inbox (and spam folder, just in case) to verify your email.",
-      data: { name: newUser.name, email: newUser.email, role: newUser.role },
     });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error.",
-    });
+  } catch (error) {
+    res
+      .status(500)
+      .send({ message: "Error registering user", error: error.message });
   }
 };
 

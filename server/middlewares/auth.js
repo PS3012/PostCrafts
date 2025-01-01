@@ -3,9 +3,6 @@ import User from "../models/user.model.js";
 
 const protectedRoute = async (req, res, next) => {
   try {
-    const token = req.cookies.authToken;
-    console.log(token);
-
     if (!token) {
       return res
         .status(401)
@@ -13,14 +10,11 @@ const protectedRoute = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (decoded.exp < Date.now() / 1000) {
-      return res.status(401).json({ message: "Token expired" });
-    }
 
     const user = await User.findById(decoded.userId).select("-password");
 
     if (!user) {
-      return res.status(401).json({ message: "User not found" });
+      return res.status(401).json({ message: "User no longer exists" });
     }
 
     req.user = user;
@@ -30,4 +24,4 @@ const protectedRoute = async (req, res, next) => {
   }
 };
 
-export default protectedRoute;
+export default protectedRoute

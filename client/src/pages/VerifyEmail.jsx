@@ -1,37 +1,55 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import axiosReq from "../utils/axiosReq";
 
-function VerifyEmail() {
-     const URL = new URLSearchParams(window.location.search);
-
+const VerifyEmail = () => {
+     const location = useLocation();
      const [message, setMessage] = useState("");
+     const [loading, setLoading] = useState(true);
      const navigate = useNavigate();
 
-     const token = URL.get("token");
+     useEffect(() => {
+          const sendTokenToBackend = async (token) => {
+               try {
+                    const res = await axiosReq.post("/auth/verifyToken", { token });
+                    if (res.status === 200) {
+                         alert("Verified Successfully!!");
+                         navigate("/login");
+                    } else if (res.status === 404) {
+                         setMessage(res.data.message || "Token not found");
+                    }
+               } catch (error) {
+                    console.error("Token verification failed:", error);
+                    setMessage(error.response?.data?.message || "Token expired or invalid");
+               } finally {
+                    setLoading(false); 
+               }
+          };
+          const params = new URLSearchParams(location.search);
+          const token = params.get("token");
+          if (!token) {
+               setMessage("Token is missing. Please return to the homepage.");
+               setLoading(false);
+          } else {
+               sendTokenToBackend(token);
+          }
+     }, [location.search, navigate]); 
 
-     if (!token) {
-          return (
-               <h2>
-                    Missing Token. Go back to <Link to="/">Home</Link>
-               </h2>
-          );
-     } else {
-          sendTokenToBackend();
+     if (loading) {
+          return <h2>Verifying your email...</h2>; 
      }
 
-     async function sendTokenToBackend() {
-          const response = await axiosReq.post("/auth/verifyToken", {
-               token: token,
-          });
-          console.log(response);
-          if (response.status === 200)
-               return navigate("/login?msg=verification_successful");
-
-          if (response.status === 404) setMessage(response.message);
-     }
-
-     return <>{message.length > 0 ? <h3>{message}</h3> : ""}</>;
-}
+     return (
+          <div>
+               {message ? (
+                    <h3>{message}</h3>
+               ) : (
+                    <h2>
+                         Return to <Link to={"/"}>Home</Link>
+                    </h2>
+               )}
+          </div>
+     );
+};
 
 export default VerifyEmail;

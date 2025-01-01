@@ -1,77 +1,56 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import {} from "dotenv/config.js";
-import { emailRegex } from "../../utils/constants.js";
 import User from "../../models/user.model.js";
 
 const handleUserLogin = async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(422).json({
-      error: true,
-      message: "Invalid Data. All fields are required.",
-    });
-  }
-
-  if (!emailRegex.test(email)) {
-    return res.status(422).json({
-      error: true,
-      message: "Invalid e-mail id.",
-    });
-  }
-
+  const { username, password } = request.body;
+  
   try {
-    const existingUser = await User.findOne({ email });
-    if (!existingUser) {
-      return res.status(409).json({
-        error: true,
-        message: `User with ${email} not exits.`,
-      });
-    }
+    const user = await User.findOne({ username });
 
-    if (!existingUser.isEmailVerified) {
-      return res.status(403).json({
-        error: true,
-        message: "Please verify your email before logging in",
-      });
-    }
+    if (!user)
+      return response.status(401).send({ message: "Incorrect credentials" });
 
-    const passwordMatch = await bcrypt.compare(password, existingUser.password);
-    if (!passwordMatch) {
-      return res.status(401).json({
-        error: true,
-        message: "Incorrect credentials",
-      });
-    }
+    if (!user.isEmailVerified)
+      return response
+        .status(403)
+        .send({ message: "Please verify your email before logging in" });
 
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (!passwordMatch)
+      return response.status(401).send({ message: "Incorrect credentials" });
+    
     const token = jwt.sign(
       {
-        userId: existingUser._id,
-        email: existingUser.email,
+        userId: user._id,
+        username: user.username,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "24h" }
+      {
+        expiresIn: "24h",
+      }
     );
-
-    res.cookie("authToken", token, {
+    
+    response.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       sameSite: "strict",
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    return res.status(200).json({
-      error: false,
-      message: "User login successfully.",
-      data: { name: existingUser.name, email, role: existingUser.role },
-    });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error.",
-    });
+    const loggedInUser = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      gender: user.gender,
+    };
+    
+    response.send(loggedInUser);
+  } catch (error) {
+    return response.status(500).send({ message: error });
   }
 };
 

@@ -1,32 +1,33 @@
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast"
-import { Link, useNavigate, useSearchParams } from "react-router-dom"
-import { emailRegex } from "../utils/constants"
-import { useAuth } from "../contexts/Auth"
-import axiosReq from "../utils/axiosReq"
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../store/authSlice";
+import axiosReq from "../utils/axiosReq";
 
 function Login() {
+     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated)
+     const dispatch = useDispatch();
+     const navigate = useNavigate();
      const [searchParams] = useSearchParams();
-     const { login, isAuthenticated } = useAuth();
-     const navigate = useNavigate()
-     const initialData = { email: "", password: "" }
+     const initialData = { username: "", password: "" }
      const [data, setData] = useState(initialData)
      useEffect(() => {
           if (isAuthenticated) {
                const referer = searchParams.get("referer");
+               console.log("referer", referer);
                if (referer) navigate(referer);
           }
      }, [isAuthenticated, navigate, searchParams]);
-     const handleDataChange = (e) => {
-          const { name, value } = e.target
-          setData(prev => ({ ...prev, [name]: value }))
+
+     function handleDataChange(e) {
+          const { name, value } = e.target;
+          setData(prev => ({ ...prev, [name]: value }));
      }
      const handleSubmit = async (e) => {
           e.preventDefault()
-          if (!data.email || data.email.trim() === "") {
-               toast.error("E-Mail is required.")
-          } else if (!emailRegex.test(data.email)) {
-               toast.error("Enter valid email")
+          if (!data.username || data.username.trim() === "") {
+               toast.error("Username is required.")
           } else if (!data.password || data.password.trim() === "") {
                toast.error("Password is required.")
           } else {
@@ -35,10 +36,10 @@ function Login() {
                     const finalData = Object.fromEntries(formdata.entries());
                     const response = await axiosReq.post("/user/login", finalData);
                     if (response.status === 200) {
-                         toast.success("Login successfully.")
-                         setData(initialData)
+                         const { name } = response.data;
+                         localStorage.setItem("authToken", name);
+                         dispatch(loginUser(response.data))
                          navigate("/");
-                         login();
                     }
                } catch (error) {
                     console.log(error);
@@ -104,7 +105,7 @@ function Login() {
 
                                    <form className="space-y-3 mt-5 mb-0" onSubmit={handleSubmit}>
                                         <div>
-                                             <label className="text-base font-medium text-gray-900"> Email address </label>
+                                             <label className="text-base font-medium text-gray-900"> Username </label>
                                              <div className="mt-2.5 relative text-gray-400 focus-within:text-gray-600">
                                                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                                        <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -112,7 +113,7 @@ function Login() {
                                                        </svg>
                                                   </div>
                                                   <input
-                                                       type="email" placeholder="Enter email to get started" name="email" value={data.email} onChange={handleDataChange}
+                                                       type="text" placeholder="Enter username" name="username" value={data.username} onChange={handleDataChange}
                                                        className="block w-full py-4 pl-10 pr-4 text-black placeholder-gray-500 transition-all duration-200 border border-gray-200 rounded-md bg-gray-50 focus:outline-none focus:border-blue-600 focus:bg-white caret-blue-600"
                                                   />
                                              </div>

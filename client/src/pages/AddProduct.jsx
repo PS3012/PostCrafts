@@ -6,19 +6,24 @@ import axiosReq from "../utils/axiosReq";
 function AddProduct() {
      const navigate = useNavigate()
      const initialData = {
-          image: '',
-          name: '',
-          brand: '',
-          category: '',
-          price: '',
-          description: '',
-          inventory: 0,
+          name: "",
+          brand: "",
+          category: "",
+          price: "",
+          description: "",
+          inventory: "",
+          image: "",
      }
      const [product, setProduct] = useState(initialData)
-     const handleChange = (e) => {
-          const { name, value } = e.target;
-          setProduct({ ...product, [name]: value });
+     function handleChange(e) {
+          const { name, value } = e.target
+          if (e.target.name === "image") {
+               setProduct({ ...product, [name]: e.target.files[0] });
+          } else {
+               setProduct({ ...product, [name]: value });
+          }
      }
+
      const handleSubmit = async (e) => {
           e.preventDefault();
           if (!product.name || product.name.trim() === "") {
@@ -34,8 +39,14 @@ function AddProduct() {
           } else {
                try {
                     const formdata = new FormData(e.target);
-                    const finalData = Object.fromEntries(formdata.entries());
-                    const response = await axiosReq.post("/product", finalData);
+                    formdata.append("name", product.name);
+                    formdata.append("price", product.price);
+                    formdata.append("category", product.category);
+                    formdata.append("brand", product.brand);
+                    formdata.append("description", product.description);
+                    formdata.append("inventory", product.inventory);
+                    formdata.append("image", product.image);
+                    const response = await axiosReq.post("/product", formdata, { withCredentials: true});
                     if (response.status === 201) {
                          toast.success("Product added successfully.")
                          setProduct(initialData)
@@ -70,22 +81,6 @@ function AddProduct() {
                                    />
                               </div>
                               <div>
-                                   <label className="block text-sm font-medium mb-1">Image</label>
-                                   <input
-                                        type="file" name="image"
-                                        value={product.image} onChange={handleChange}
-                                        className="w-full border border-gray-300 p-2 rounded"
-                                   />
-                              </div>
-                              <div>
-                                   <label className="block text-sm font-medium mb-1">Inventory <span className="text-red-600">*</span></label>
-                                   <input
-                                        type="number" name="inventory"
-                                        value={product.inventory} onChange={handleChange}
-                                        className="w-full border border-gray-300 p-2 rounded"
-                                   />
-                              </div>
-                              <div>
                                    <label className="block text-sm font-medium mb-1">Category <span className="text-red-600">*</span></label>
                                    <input
                                         type="text" name="category"
@@ -98,6 +93,21 @@ function AddProduct() {
                                    <input
                                         type="text" name="price"
                                         value={product.price} onChange={handleChange}
+                                        className="w-full border border-gray-300 p-2 rounded"
+                                   />
+                              </div>
+                              <div>
+                                   <label className="block text-sm font-medium mb-1">Image</label>
+                                   <input
+                                        type="file" name="image" onChange={handleChange}
+                                        className="w-full border border-gray-300 p-2 rounded"
+                                   />
+                              </div>
+                              <div>
+                                   <label className="block text-sm font-medium mb-1">Inventory Count <span className="text-red-600">*</span></label>
+                                   <input
+                                        type="number" name="inventory"
+                                        value={product.inventory} onChange={handleChange}
                                         className="w-full border border-gray-300 p-2 rounded"
                                    />
                               </div>
