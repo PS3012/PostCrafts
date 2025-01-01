@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import {} from "dotenv/config.js";
 
 const handleValidateToken = (req, res) => {
-  const token = req.cookies.authToken;
+  const token = req.cookies.token;
 
   if (!token)
     return res
